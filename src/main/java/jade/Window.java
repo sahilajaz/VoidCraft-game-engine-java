@@ -3,6 +3,7 @@ package jade;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import util.Time;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -23,7 +24,7 @@ public class Window {
     private  int height;
     private  String title;
     private  long  glfwWindow;
-    private float r,b,g,a;
+    public float r,b,g,a;
     private boolean fadeToBlack = false;
 
 
@@ -41,11 +42,28 @@ public class Window {
         a=1;
     }
 
+    private static Scene currentScene = null;
+
     public static Window get() {
         if (Window.window == null) {
             Window.window = new Window();
         }
         return Window.window;
+    }
+
+    public static void changeScene(int newScene) {
+        switch (newScene) {
+            case 0:
+                currentScene = new LevelEditorScene();
+//                currentScene.init();
+                break;
+            case 1:
+                currentScene = new LevelScene();
+                break;
+            default:
+                assert false : "Unknown scene " + newScene;
+                break;
+        }
     }
 
     public void run() {
@@ -110,9 +128,15 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        Window.changeScene(0);
     }
 
     public void loop() {
+        float beginTime  = Time.getTime();
+        float endTime;
+        float dt = -1.0f;
+
         while(!glfwWindowShouldClose(glfwWindow)) {
             //Poll events
             /*
@@ -128,17 +152,16 @@ public class Window {
             //clears the screen using the color you just set
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (fadeToBlack) {
-                r = Math.max(r - 0.01f, 0);
-                g = Math.max(r - 0.01f, 0);
-                b = Math.max(r - 0.01f, 0);
+            if (dt >= 0){
+                currentScene.update(dt);
             }
-            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
-                fadeToBlack = true;
-            }
+
             // Swaps the back buffer with the front buffer, displaying the rendered frame on the screen
             glfwSwapBuffers(glfwWindow);
 
+            endTime = Time.getTime();
+             dt = endTime - beginTime;
+            beginTime = endTime;
         }
     }
 }
