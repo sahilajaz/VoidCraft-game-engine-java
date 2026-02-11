@@ -23,6 +23,9 @@ public class Window {
     private  int height;
     private  String title;
     private  long  glfwWindow;
+    private float r,b,g,a;
+    private boolean fadeToBlack = false;
+
 
     // 1. Create a static variable to hold the single object
     private static Window window = null;
@@ -32,6 +35,10 @@ public class Window {
         this.width = 1000;
         this.height = 600;
         this.title = "Mario";
+        r=1;
+        b=1;
+        g=1;
+        a=1;
     }
 
     public static Window get() {
@@ -82,6 +89,7 @@ public class Window {
         glfwSetCursorPosCallback(glfwWindow , MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(glfwWindow , MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
+        glfwSetKeyCallback(glfwWindow , KeyListener::keyCallback);
 
         //Make OPENGL context current
         //All OpenGL commands from now on should affect THIS window
@@ -115,11 +123,19 @@ public class Window {
             glfwPollEvents();
 
             //Sets background color
-            glClearColor(1.0f , 0.0f , 0.0f , 1.0f);
+            glClearColor(r,g,b,a);
 
             //clears the screen using the color you just set
             glClear(GL_COLOR_BUFFER_BIT);
 
+            if (fadeToBlack) {
+                r = Math.max(r - 0.01f, 0);
+                g = Math.max(r - 0.01f, 0);
+                b = Math.max(r - 0.01f, 0);
+            }
+            if (KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+                fadeToBlack = true;
+            }
             // Swaps the back buffer with the front buffer, displaying the rendered frame on the screen
             glfwSwapBuffers(glfwWindow);
 
