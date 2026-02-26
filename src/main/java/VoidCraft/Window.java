@@ -1,4 +1,4 @@
-package jade;
+package VoidCraft;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -26,6 +26,7 @@ public class Window {
     private  long  glfwWindow;
     public float r,b,g,a;
     private boolean fadeToBlack = false;
+    private static Scene currentScene = null;
 
 
     // 1. Create a static variable to hold the single object
@@ -42,7 +43,6 @@ public class Window {
         a=1;
     }
 
-    private static Scene currentScene = null;
 
     public static Window get() {
         if (Window.window == null) {
@@ -55,10 +55,11 @@ public class Window {
         switch (newScene) {
             case 0:
                 currentScene = new LevelEditorScene();
-//                currentScene.init();
+                currentScene.init();
                 break;
             case 1:
                 currentScene = new LevelScene();
+                currentScene.init();
                 break;
             default:
                 assert false : "Unknown scene " + newScene;
