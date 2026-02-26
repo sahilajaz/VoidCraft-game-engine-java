@@ -1,4 +1,4 @@
-import jade.Window;
+import VoidCraft.Window;
 
 public class Main {
 
